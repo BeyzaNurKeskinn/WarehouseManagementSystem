@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Kullanıcı Yönetimi</title>
+</h:head>
+<h:body>
+    <div class="card">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            
+            <p:panel header="Kullanıcı İşlemleri" style="margin-bottom:20px">
+                <h:panelGrid columns="3" cellpadding="5">
+                    <p:outputLabel for="name" value="İsim:"/>
+                    <p:inputText id="name" value="#{userBean.name}" required="true" 
+                               requiredMessage="İsim alanı boş bırakılamaz"/>
+                    <p:message for="name"/>
+                </h:panelGrid>
+                
+                <p:commandButton value="Ekle" action="#{userBean.addUser}" 
+                               update="form:userTable form:messages form:name"
+                               style="margin-right:10px"/>
+                               
+                <p:commandButton value="Güncelle" action="#{userBean.updateUser}"
+                               update="form:userTable form:messages form:name"
+                               disabled="#{userBean.selectedUser == null}"
+                               style="margin-right:10px"/>
+                               
+                <p:commandButton value="Sil" action="#{userBean.deleteUser}"
+                               update="form:userTable form:messages form:name"
+                               disabled="#{userBean.selectedUser == null}"
+                               style="margin-right:10px">
+                    <p:confirm header="Silme Onayı" message="Bu kullanıcıyı silmek istediğinizden emin misiniz?" icon="pi pi-exclamation-triangle"/>
+                </p:commandButton>
+            </p:panel>
+
+            <p:dataTable id="userTable" value="#{userBean.users}" var="user"
+                        selection="#{userBean.selectedUser}" selectionMode="single"
+                        rowKey="#{user.id}" emptyMessage="Kayıtlı kullanıcı bulunmamaktadır."
+                        style="margin-bottom:20px">
+                
+                <p:ajax event="rowSelect" update="form:name form:userTable"/>
+                
+                <p:column headerText="ID">
+                    <h:outputText value="#{user.id}"/>
+                </p:column>
+                
+                <p:column headerText="İsim">
+                    <h:outputText value="#{user.name}"/>
+                </p:column>
+            </p:dataTable>
+            
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="Evet" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="Hayır" type="button" styleClass="ui-confirmdialog-no ui-button-secondary" icon="pi pi-times"/>
+            </p:confirmDialog>
+        </h:form>
+    </div>
+</h:body>
+</html> 
