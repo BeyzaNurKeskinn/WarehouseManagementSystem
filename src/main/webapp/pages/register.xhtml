@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Register</title>
+</h:head>
+<h:body>
+    <h:form>
+         <p:panel header="Register">
+        <h:outputLabel for="name" value="Username: " />
+        <p:inputText id="name" value="#{userBean.name}" required="true" placeholder="Enter your username" />
+        <br/><br/>
+
+        <h:outputLabel for="password" value="Password: " />
+        <p:password id="password" value="#{userBean.password}" required="true" toggleMask="true" placeholder="Enter your password"/>
+        <br/><br/>
+
+        <p:commandButton value="Register" action="#{userBean.register}" icon="pi pi-user-plus" styleClass="register-button" />
+        <br/><br/>
+
+        <h:outputLink value="login.xhtml">Back to Login</h:outputLink>
+         </p:panel>
+    </h:form>
+</h:body>
+</html>
+

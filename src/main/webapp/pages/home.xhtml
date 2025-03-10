@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Home</title>
+</h:head>
+<h:body>
+
+    <h:form>
+        <!-- Menü Paneli -->
+        <p:panelMenu styleClass="menu" model="#{menuBean.menuModel}" />
+        
+        <h2>Welcome to the Warehouse Management System , #{userBean.loggedInUser}</h2>
+
+        <p:commandButton value="Depo Yönetimi" action="warehouse.xhtml?faces-redirect=true" styleClass="menu-button" />
+        <p:commandButton value="Kullanıcı Yönetimi" action="users.xhtml?faces-redirect=true" styleClass="menu-button" />
+         <p:commandButton value="Çıkış Yap" action="#{userBean.logout}" />
+    </h:form>
+
+</h:body>
+</html>
+
+
