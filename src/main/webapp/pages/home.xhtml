@@ -1,25 +1,64 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
 <h:head>
-    <title>Home</title>
+    <title>Depo Yönetim Sistemi</title>
+    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/styles.css"/>
 </h:head>
+
 <h:body>
 
+    <!-- Navbar -->
     <h:form>
-        <!-- Menü Paneli -->
-        <p:panelMenu styleClass="menu" model="#{menuBean.menuModel}" />
-        
-        <h2>Welcome to the Warehouse Management System , #{userBean.loggedInUser}</h2>
-
-        <p:commandButton value="Depo Yönetimi" action="warehouse.xhtml?faces-redirect=true" styleClass="menu-button" />
-        <p:commandButton value="Kullanıcı Yönetimi" action="users.xhtml?faces-redirect=true" styleClass="menu-button" />
-         <p:commandButton value="Çıkış Yap" action="#{userBean.logout}" />
+        <h:panelGrid columns="2" styleClass="navbar">
+            <h:outputText value="Logo" styleClass="logo"/>
+            <h:outputText value="Telefon: +90 123 456 7890" styleClass="phone-number"/>
+        </h:panelGrid>
     </h:form>
 
+    <div class="container">
+        <!-- Sidebar --> 
+        
+        <div class="sidebar">
+        <h:form>
+            <p:megaMenu orientation="vertical" autoDisplay="false" >
+                <f:facet name="start">
+                    <p:graphicImage name="images/warehouse-logo.svg" width="150" />
+                </f:facet>
+
+				<p:menuitem value="Depo Yönetimi" outcome="warehouse.xhtml" icon="pi pi-fw pi-box" />
+				
+                <p:menuitem value="Kullanıcılar" outcome="users.xhtml" icon="pi pi-fw pi-users" />
+
+                <p:menuitem value="Çıkış" action="#{userBean.logout}" icon="pi pi-fw pi-power-off" />
+
+                
+            </p:megaMenu>
+            </h:form>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Hoşgeldiniz!</h1>
+            
+            <!-- Kullanıcı Giriş Kontrolü -->
+            <h:panelGroup rendered="#{userBean.loggedInUser != null}">
+                <h:outputText value="Hoşgeldiniz, #{userBean.loggedInUser}!" styleClass="welcome-message"/>
+            </h:panelGroup>
+
+            <!-- Giriş Yapılmadıysa Yönlendirme -->
+            <h:panelGroup rendered="#{userBean.loggedInUser == null}">
+                <h:outputText value="Lütfen giriş yapın." />
+            </h:panelGroup>
+
+            <p>Depo Yönetim Sistemi ana paneli. Buradan tüm depo işlemlerinizi kolayca yönetebilirsiniz.</p>
+        </div>
+    </div>
+
 </h:body>
+
 </html>
-
-
