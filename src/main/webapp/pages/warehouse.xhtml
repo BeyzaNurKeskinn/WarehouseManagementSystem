@@ -1,18 +1,113 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-<h:head>
-    <title>Depo Yönetimi</title>
-</h:head>
-<h:body>
-    <h:form>
-        <p:panel header="Depo Yönetimi">
-          
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-          
-        </p:panel>
-    </h:form>
+<h:head>
+	<title>Depo Yönetimi</title>
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/css/styles.css" />
+</h:head>
+
+<h:body>
+	<h:form>
+		<h:panelGrid columns="2" styleClass="navbar">
+			<h:outputText value="Logo" styleClass="logo" />
+			<h:outputText value="Telefon: +90 123 456 7890"
+				styleClass="phone-number" />
+		</h:panelGrid>
+	</h:form>
+
+	<div class="container">
+		<div class="sidebar">
+			<h:form>
+				<p:megaMenu orientation="vertical" autoDisplay="false">
+					<f:facet name="start">
+						<p:graphicImage name="images/warehouse-logo.svg" width="150" />
+					</f:facet>
+					<p:menuitem value="Anasayfa" outcome="home.xhtml"
+						icon="pi pi-fw pi-home" />
+					<p:menuitem value="Depo Yönetimi" outcome="warehouse.xhtml"
+						icon="pi pi-fw pi-box" />
+					<p:menuitem value="Kullanıcı Yönetimi" outcome="users.xhtml"
+						icon="pi pi-fw pi-users" />
+					<p:menuitem value="Çıkış" action="#{userBean.logout}"
+						icon="pi pi-fw pi-power-off" />
+				</p:megaMenu>
+			</h:form>
+		</div>
+
+		<div class="main-content">
+			<h1>Depo Yönetimi</h1>
+			<p:messages id="messages" showDetail="true" autoUpdate="true" />
+
+			<h:form id="addProductForm">
+				<p:panel header="Yeni Ürün Ekle">
+					<h:panelGrid columns="2">
+						<h:outputLabel for="productName" value="Ürün Adı: " />
+						<p:inputText id="productName" value="#{warehouseBean.productName}"
+							required="true" />
+
+						<h:outputLabel for="quantity" value="Adet: " />
+						<p:inputText id="quantity" value="#{warehouseBean.quantity}"
+							required="true" />
+
+						<p:commandButton value="Ekle" action="#{warehouseBean.addProduct}"
+							update=":productsForm:productsTable :messages" />
+					</h:panelGrid>
+				</p:panel>
+			</h:form>
+
+			<p:spacer height="20" />
+
+			<h:form id="productsForm">
+				<p:dataTable id="productsTable" value="#{warehouseBean.products}"
+					var="product" selectionMode="single"
+					selection="#{warehouseBean.selectedProduct}"
+					rowKey="#{product.name}">
+					<p:column headerText="Ürün Adı">
+						<h:outputText value="#{product.name}" />
+					</p:column>
+
+					<p:column headerText="Adet">
+						<h:outputText value="#{product.quantity}" />
+					</p:column>
+
+					<p:column headerText="İşlemler">
+						<p:commandButton value="Sil"
+							action="#{warehouseBean.removeProduct(product)}"
+							update=":productsForm:productsTable :messages" />
+						<p:commandButton value="Güncelle"
+							actionListener="#{warehouseBean.setSelectedProduct(product)}"
+							process="@this" update=":updateProductForm"
+							oncomplete="PF('updateProductDialog').show()" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+
+			<p:dialog id="updateProductDialog" header="Ürünü Güncelle"
+				widgetVar="updateProductDialog" modal="true" resizable="false"
+				draggable="false" height="300" width="400">
+				<h:form id="updateProductForm">
+					<h:panelGrid columns="2">
+						<h:outputLabel for="updateProductName" value="Ürün Adı: " />
+						<p:inputText id="updateProductName"
+							value="#{warehouseBean.selectedProduct.name}" required="true" />
+
+						<h:outputLabel for="updateQuantity" value="Adet: " />
+						<p:inputText id="updateQuantity"
+							value="#{warehouseBean.selectedProduct.quantity}" required="true" />
+
+						<p:commandButton value="Güncelle"
+							action="#{warehouseBean.updateProduct}"
+							update=":productsForm:productsTable :messages :updateProductForm"
+							oncomplete="PF('updateProductDialog').hide()" />
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+		</div>
+	</div>
 </h:body>
 </html>

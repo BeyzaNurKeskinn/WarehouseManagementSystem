@@ -7,7 +7,7 @@
   <display-name>Archetype Created Web Application</display-name>
   
   <welcome-file-list>
-    <welcome-file>user.xhtml</welcome-file>
+    <welcome-file>pages/login.xhtml</welcome-file>
   </welcome-file-list>
 
   <filter>

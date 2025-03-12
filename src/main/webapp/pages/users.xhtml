@@ -1,18 +1,90 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-<h:head>
-    <title>Kullanıcılar</title>
-</h:head>
-<h:body>
-    <h:form>
-        <p:panel header="Kullanıcılar">
-          
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
-          
-        </p:panel>
+<h:head>
+    <title>Kullanıcı Yönetimi</title>
+   <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/styles.css"/>
+</h:head>
+
+<h:body>
+    <h:form id="navbarForm">
+        <h:panelGrid columns="2" styleClass="navbar">
+            <h:outputText value="Logo" styleClass="logo"/>
+            <h:outputText value="Telefon: +90 123 456 7890" styleClass="phone-number"/>
+        </h:panelGrid>
     </h:form>
+
+    <div class="container">
+        <div class="sidebar">
+           <h:form>
+                <p:megaMenu orientation="vertical" autoDisplay="false">
+                    <f:facet name="start">
+                        <p:graphicImage name="images/warehouse-logo.svg" width="150" />
+                    </f:facet>
+                    <p:menuitem value="Anasayfa" outcome="home.xhtml" icon="pi pi-fw pi-home" />
+                    <p:menuitem value="Depo Yönetimi" outcome="warehouse.xhtml" icon="pi pi-fw pi-box" />
+                    <p:menuitem value="Kullanıcı Yönetimi" outcome="users.xhtml" icon="pi pi-fw pi-users" />
+                    <p:menuitem value="Çıkış" action="#{userBean.logout}" icon="pi pi-fw pi-power-off" />
+                </p:megaMenu>
+            </h:form>
+        </div>
+
+        <div class="main-content">
+            <h1>Kullanıcı Yönetimi</h1>
+            <p:messages id="messages" showDetail="true" autoUpdate="true" />
+
+            <h:form id="userManagementForm">
+                <p:panel header="Yeni Kullanıcı Ekle">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="userName" value="Kullanıcı Adı: "/>
+                        <p:inputText id="userName" value="#{userBean.name}" required="true"/>
+
+                        <h:outputLabel for="userPassword" value="Şifre: "/>
+                        <p:password id="userPassword" value="#{userBean.password}" required="true"/>
+
+                        <p:commandButton value="Ekle" action="#{userBean.register}" 
+                                         update=":userManagementForm:usersTable :messages"/>
+                    </h:panelGrid>
+                </p:panel>
+
+                <p:spacer height="20"/>
+                
+                <p:dataTable id="usersTable" value="#{userBean.users}" var="user" selectionMode="single"
+                    selection="#{userBean.selectedUser}" rowKey="#{user.id}">
+                    <p:column headerText="Kullanıcı Adı">
+                        <h:outputText value="#{user.name}"/>
+                    </p:column>
+
+                    <p:column headerText="İşlemler">
+                        <p:commandButton value="Sil" action="#{userBean.removeUser(user)}" 
+                                         update=":userManagementForm:usersTable :messages" process="@this"/>
+                         <p:commandButton value="Güncelle"
+            oncomplete="PF('updateDialog').show()"
+            process="@this"
+            update=":userManagementForm:updateForm"
+            actionListener="#{userBean.setSelectedUser(user)}" />
+                    </p:column>
+                </p:dataTable>
+                
+                <p:dialog header="Kullanıcı Güncelle" widgetVar="updateDialog" modal="true">
+                    <h:panelGrid columns="2" id="updateForm">
+                        <h:outputLabel for="updateName" value="Kullanıcı Adı: "/>
+                        <p:inputText id="updateName" value="#{userBean.selectedUser.name}" />
+
+                        <h:outputLabel for="updatePassword" value="Şifre: "/>
+                        <p:password id="updatePassword" value="#{userBean.selectedUser.password}" />
+
+                        <p:commandButton value="Kaydet" action="#{userBean.updateUser}"
+                                         update=":userManagementForm:usersTable :messages"
+                                         oncomplete="PF('updateDialog').hide()" />
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+        </div>
+    </div>
 </h:body>
 </html>
