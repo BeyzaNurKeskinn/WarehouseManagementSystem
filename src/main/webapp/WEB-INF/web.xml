@@ -10,6 +10,11 @@
     <welcome-file>pages/login.xhtml</welcome-file>
   </welcome-file-list>
 
+
+<servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/resources/*</url-pattern>
+</servlet-mapping>
   <filter>
     <filter-name>CharacterEncodingFilter</filter-name>
     <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>

@@ -5,8 +5,10 @@
       xmlns:p="http://primefaces.org/ui">
 <h:head>
     <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/styles.css"/>
 </h:head>
-<h:body>
+<h:body class="login-page">
+<div class="login-container">
     <h:form>
         <p:panel header="Login">
             <h:messages globalOnly="true" showDetail="true" showSummary="true" style="color:red;" />
@@ -25,5 +27,6 @@
             <h:outputLink value="register.xhtml">Register</h:outputLink>
         </p:panel>
     </h:form>
+     </div>
 </h:body>
 </html>

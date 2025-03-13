@@ -34,13 +34,14 @@ public class LoginFilter implements Filter {
         boolean loggedIn = (session != null && session.getAttribute("loggedInUser") != null);
         boolean loginRequest = req.getRequestURI().contains("/pages/login.xhtml");
         boolean homeRequest = req.getRequestURI().contains("/pages/home.xhtml");
+        boolean registerRequest = req.getRequestURI().contains("/pages/register.xhtml");
         boolean resourceRequest = req.getRequestURI().contains("javax.faces.resource");
 
         // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
-        if (!loggedIn && !loginRequest && !resourceRequest) {
+        if (!loggedIn && !loginRequest && !registerRequest && !resourceRequest) {
             res.sendRedirect(loginURI);
-        } else if (loggedIn && loginRequest) {
-            // Eğer kullanıcı zaten giriş yapmışsa login sayfasına gitmemeli, home sayfasına yönlendirmeli
+        } else if (loggedIn && (loginRequest || registerRequest)) {
+            // Eğer kullanıcı zaten giriş yapmışsa login veya register sayfasına gitmemeli, home sayfasına yönlendirmeli
             res.sendRedirect(homeURI);
         } else {
             chain.doFilter(request, response); // İstek devam ettirilir

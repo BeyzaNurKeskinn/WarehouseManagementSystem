@@ -5,7 +5,22 @@
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
+.login-page body {
+    background-image: url('C:/Users/beyza/eclipse-workspace/jsf-app/src/main/webapp/resources/img/img01.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
 
+.login-page .login-container {
+    text-align: center;
+}
 /* Sayfa arka planı */
 body {
     background-color: #f4f4f4;
