@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DatabaseHelper {
 
-    private static final String URL = "jdbc:sqlserver://DESKTOP-9NE921I:1433;databaseName=WHproject;encrypt=false;";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "3625";
+    private static final String URL = "jdbc:sqlserver://host:1433;databaseName=WHproject;encrypt=false;";
+    private static final String USER = "*";
+    private static final String PASSWORD = "*";
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
     static {
