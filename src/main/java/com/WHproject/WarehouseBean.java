@@ -15,8 +15,9 @@ public class WarehouseBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String productName;
     private int quantity;
-    private Product selectedProduct = new Product("", 0); // NULL OLMASINI ÖNLEMEK İÇİN BOŞ NESNE
+    private Product selectedProduct = new Product(); // // Parametresiz constructor kullanılıyor
     private List<Product> products = new ArrayList<>();
+    private ProductDAO productDAO = new ProductDAO();
 
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
@@ -31,7 +32,10 @@ public class WarehouseBean implements Serializable {
         }
     }
 
-    public List<Product> getProducts() { return products; }
+    public List<Product> getProducts() {  
+    	products = productDAO.getAllProducts();  // Veritabanından ürünleri alıyoruz
+    	return products; 
+    }
     
     public void selectProduct(Product product) {
         if (product != null) {
@@ -43,17 +47,20 @@ public class WarehouseBean implements Serializable {
     
     public void addProduct() {
         if (productName != null && !productName.trim().isEmpty() && quantity > 0) {
-            products.add(new Product(productName, quantity));
+            Product newProduct = new Product(0,productName, quantity);
+            productDAO.addProduct(newProduct);  // Veritabanına ekliyoruz
+            products.add(newProduct);  // Listeye ekliyoruz (sayfa güncellenir)
             productName = "";
             quantity = 0;
-            selectedProduct = new Product("", 0); // FORMU SIFIRLA
+            selectedProduct = new Product();
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Ürün eklendi!"));
         }
     }
     
     public void removeProduct(Product product) {
-        products.remove(product);
+        productDAO.removeProduct(product);  // Veritabanından siliyoruz
+        products.remove(product);  // Listeyi güncelliyoruz
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Ürün silindi!"));
     }
@@ -61,28 +68,10 @@ public class WarehouseBean implements Serializable {
     public void updateProduct() {
         if (selectedProduct != null && selectedProduct.getName() != null && !selectedProduct.getName().trim().isEmpty() 
                 && selectedProduct.getQuantity() > 0) {
-            
-            boolean updated = false;
-            
-            for (Product p : products) {
-                if (p.getName().equals(selectedProduct.getName())) {
-                    p.setName(selectedProduct.getName()); // Doğru şekilde güncelle
-                    p.setQuantity(selectedProduct.getQuantity());
-                    updated = true;
-                    break;
-                }
-            }
-
-            if (updated) {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Ürün güncellendi!"));
-                
-                // Formu sıfırla (Ama `selectedProduct` nesnesini kaybetme!)
-                selectedProduct = new Product("", 0);  
-            } else {
-                FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Ürün bulunamadı!"));
-            }
+            productDAO.updateProduct(selectedProduct);  // Veritabanında güncelliyoruz
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Ürün güncellendi!"));
+            selectedProduct = new Product();  
         } else {
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Geçersiz veri!"));
@@ -90,20 +79,32 @@ public class WarehouseBean implements Serializable {
     }
 
 
+
     public static class Product implements Serializable {
         private static final long serialVersionUID = 1L;
+        private int id;
         private String name;
         private int quantity;
- 
+        
+        public Product() {
+            this.id = 0; // Boş nesne için id = 0
+            this.name = "";
+            this.quantity = 0;
+        }
+         public Product(int id, String name, int quantity) {
+            this.id = id;
+            this.name = name;
+            this.quantity = quantity;
+        }
+        public int getId() { return id; }
+        public void setId(int id) { this.id = id; }
+        
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
  
         public int getQuantity() { return quantity; }
         public void setQuantity(int quantity) { this.quantity = quantity; }
 
-        public Product(String name, int quantity) {
-            this.name = name;
-            this.quantity = quantity;
-        }
+       
     }
 }
