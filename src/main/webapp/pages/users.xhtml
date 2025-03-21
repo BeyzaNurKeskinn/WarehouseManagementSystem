@@ -44,10 +44,12 @@
                         <p:inputText id="userName" value="#{userBean.name}" required="true"/>
 
                         <h:outputLabel for="userPassword" value="Şifre: "/>
-                        <p:password id="userPassword" value="#{userBean.password}" required="true"/>
+                        <p:password id="userPassword" value="#{userBean.password}" 
+            required="#{not empty param['userManagementForm:register']}" 
+            requiredMessage="Şifre gereklidir!" />
 
-                        <p:commandButton value="Ekle" action="#{userBean.register}" 
-                                         update=":userManagementForm:usersTable :messages"/>
+                        <p:commandButton value="Ekle" actionListener="#{userBean.register}" 
+                 update=":userManagementForm:usersTable :messages"/>
                     </h:panelGrid>
                 </p:panel>
 
@@ -60,9 +62,12 @@
                     </p:column>
 
                     <p:column headerText="İşlemler">
-                        <p:commandButton value="Sil" action="#{userBean.removeUser(user)}" 
-                                         update=":userManagementForm:usersTable :messages" process="@this"/>
-                         <p:commandButton value="Güncelle"
+                      <p:commandButton value="Sil"
+    icon="pi pi-trash"
+    actionListener="#{userBean.setSelectedUser(user)}"
+    oncomplete="PF('confirmDeleteDialog').show()"
+    process="@this"/>
+                           <p:commandButton value="Güncelle"
             oncomplete="PF('updateDialog').show()"
             process="@this"
             update=":userManagementForm:updateForm"
@@ -70,7 +75,7 @@
                     </p:column>
                 </p:dataTable>
                 
-                <p:dialog header="Kullanıcı Güncelle" widgetVar="updateDialog" modal="true">
+                 <p:dialog header="Kullanıcı Güncelle" widgetVar="updateDialog" modal="true">
                     <h:panelGrid columns="2" id="updateForm">
                         <h:outputLabel for="updateName" value="Kullanıcı Adı: "/>
                         <p:inputText id="updateName" value="#{userBean.selectedUser.name}" />
@@ -83,6 +88,16 @@
                                          oncomplete="PF('updateDialog').hide()" />
                     </h:panelGrid>
                 </p:dialog>
+                
+<p:dialog widgetVar="confirmDeleteDialog" header="Onay" modal="true">
+    <h:outputText value="Kullanıcıyı silmek istediğinizden emin misiniz?" />
+    <br/><br/>
+    <p:commandButton value="Evet" action="#{userBean.removeUser()}" 
+        update=":userManagementForm:usersTable :messages"
+        process="@this"
+        oncomplete="PF('confirmDeleteDialog').hide()"/>
+    <p:commandButton value="İptal" onclick="PF('confirmDeleteDialog').hide()" type="button"/>
+</p:dialog>
             </h:form>
         </div>
     </div>

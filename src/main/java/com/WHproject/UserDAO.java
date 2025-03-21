@@ -1,75 +1,106 @@
 package com.WHproject;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 public class UserDAO {
 
-    public List<UserBean.User> getAllUsers() {
-        List<UserBean.User> users = new ArrayList<>();
-        String query = "SELECT * FROM Users";  // 'Users' tablosunun adı
+	public List<UserBean.User> getAllUsers() {
+		List<UserBean.User> users = new ArrayList<>();
+		String query = "SELECT * FROM Users"; // 'Users' tablosunun adı
 
-        try (Connection conn = DatabaseHelper.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+		try (Connection conn = DatabaseHelper.getConnection();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query)) {
 
-            while (rs.next()) {
-                Long id = rs.getLong("id");
-                String name = rs.getString("name");
-                String password = rs.getString("password");
-                users.add(new UserBean.User(id, name, password));  // Kullanıcıyı ekliyoruz
-            }
+			while (rs.next()) {
+				Long id = rs.getLong("id");
+				String name = rs.getString("name");
+				String password = rs.getString("password");
+				users.add(new UserBean.User(id, name, password)); // Kullanıcıyı ekliyoruz
+			}
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        return users;
-    }
+		return users;
+	}
 
-    public void addUser(UserBean.User user) {
-        String query = "INSERT INTO Users (name, password) VALUES (?, ?)";
+	public boolean isUserExists(String username) {
+		String query = "SELECT COUNT(*) FROM Users WHERE name = ?";
+		try (Connection conn = DatabaseHelper.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next() && rs.getInt(1) > 0) {
+				return true; // Kullanıcı adı zaten var
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+	public boolean addUser(UserBean.User user) throws IOException {
+		if (isUserExists(user.getName())) {
+			return false; // Kullanıcı adı zaten var, ekleme başarısız
+		}
 
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getPassword());
-            ps.executeUpdate();
+		String query = "INSERT INTO Users (name, password) VALUES (?, ?)";
+		try (Connection conn = DatabaseHelper.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+			ps.setString(1, user.getName());
+			ps.setString(2, user.getPassword());
+			ps.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		FacesContext.getCurrentInstance().getExternalContext().redirect("users.xhtml");
+		return false;
+	}
 
-    public void removeUser(UserBean.User user) {
-        String query = "DELETE FROM Users WHERE id = ?";
+	public void removeUser(UserBean.User selectedUser) {
 
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+		String query = "DELETE FROM Users WHERE id = ?";
 
-            ps.setLong(1, user.getId());
-            ps.executeUpdate();
+		try (Connection conn = DatabaseHelper.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+			ps.setLong(1, selectedUser.getId());
+			int rowsAffected = ps.executeUpdate();
 
-    public void updateUser(UserBean.User user) {
-        String query = "UPDATE Users SET name = ?, password = ? WHERE id = ?";
+			if (rowsAffected > 0) {
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Kullanıcı silindi!"));
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Kullanıcı silinemedi!"));
+			}
+		} catch (SQLException e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Silme işlemi sırasında bir hata oluştu!"));
+			e.printStackTrace();
+		}
+	}
 
-        try (Connection conn = DatabaseHelper.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+	public void updateUser(UserBean.User user) {
+		String query = "UPDATE Users SET name = ?, password = ? WHERE id = ?";
 
-            ps.setString(1, user.getName());  // Kullanıcı adı
-            ps.setString(2, user.getPassword());  // Şifre
-            ps.setLong(3, user.getId());   // ID
-            ps.executeUpdate();
+		try (Connection conn = DatabaseHelper.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+			ps.setString(1, user.getName()); // Kullanıcı adı
+			ps.setString(2, user.getPassword()); // Şifre
+			ps.setLong(3, user.getId()); // ID
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
