@@ -1,66 +1,101 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <h:head>
-    <title>Depo Yönetim Sistemi</title>
-    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/css/styles.css"/>
+	<title>Depo Yönetim Sistemi</title>
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/resources/css/styles.css" />
 </h:head>
 
 <h:body>
 
-    <!-- Navbar -->
-    <h:form>
-        <h:panelGrid columns="2" styleClass="navbar">
-            <h:outputText value="Logo" styleClass="logo"/>
-            <h:outputText value="Telefon: +90 123 456 7890" styleClass="phone-number"/>
-        </h:panelGrid>
-    </h:form>
+	<!-- Navbar -->
+	<h:form>
+		<h:panelGrid columns="2" styleClass="navbar">
+			<h:outputText value="Logo" styleClass="logo" />
+			<h:outputText value="Telefon: +90 123 456 7890"
+				styleClass="phone-number" />
+		</h:panelGrid>
+	</h:form>
 
-    <div class="container">
-        <!-- Sidebar --> 
-        
-        <div class="sidebar">
-        <h:form>
-            <p:megaMenu orientation="vertical" autoDisplay="false" >
-                <f:facet name="start">
-                    <p:graphicImage name="images/warehouse-logo.svg" width="150" />
-                </f:facet>
+	<div class="container">
+		<!-- Sidebar -->
 
-				<p:menuitem value="Anasayfa" outcome="home.xhtml" icon="pi pi-fw pi-home" />
-				
-				<p:menuitem value="Depo Yönetimi" outcome="warehouse.xhtml" icon="pi pi-fw pi-box" />
-				
-                <p:menuitem value="Kullanıcı Yönetimi" outcome="users.xhtml" icon="pi pi-fw pi-users" />
+		<div class="sidebar">
+			<h:form>
+				<p:megaMenu orientation="vertical" autoDisplay="false">
+					<f:facet name="start">
+						<p:graphicImage name="images/warehouse-logo.svg" width="150" />
+					</f:facet>
 
-                <p:menuitem value="Çıkış" action="#{userBean.logout}" icon="pi pi-fw pi-power-off" />
+					<p:menuitem value="Anasayfa" outcome="home.xhtml"
+						icon="pi pi-fw pi-home" />
 
-                
-            </p:megaMenu>
-            </h:form>
-        </div>
+					<p:menuitem value="Depo Yönetimi" outcome="warehouse.xhtml"
+						icon="pi pi-fw pi-box" />
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <h1>Hoşgeldiniz!</h1>
-            
-            <!-- Kullanıcı Giriş Kontrolü -->
-            <h:panelGroup rendered="#{userBean.loggedInUser != null}">
-                <h:outputText value="Hoşgeldiniz, #{userBean.loggedInUser}!" styleClass="welcome-message"/>
-            </h:panelGroup>
+					<p:menuitem value="Kullanıcı Yönetimi" outcome="users.xhtml"
+						icon="pi pi-fw pi-users" />
 
-            <!-- Giriş Yapılmadıysa Yönlendirme -->
-            <h:panelGroup rendered="#{userBean.loggedInUser == null}">
-                <h:outputText value="Lütfen giriş yapın." />
-            </h:panelGroup>
+					<p:menuitem value="Çıkış" action="#{userBean.logout}"
+						icon="pi pi-fw pi-power-off" />
 
-            <p>Depo Yönetim Sistemi ana paneli. Buradan tüm depo işlemlerinizi kolayca yönetebilirsiniz.</p>
-            
-        </div>
-    </div>
+
+				</p:megaMenu>
+			</h:form>
+		</div>
+
+		<!-- Main Content -->
+		<div class="main-content">
+			<h1>Hoşgeldiniz!</h1>
+
+			<!-- Kullanıcı Giriş Kontrolü -->
+			<h:panelGroup rendered="#{userBean.loggedInUser != null}">
+				<h:outputText value="Hoşgeldin, #{userBean.loggedInUser}!"
+					styleClass="welcome-message" />
+			</h:panelGroup>
+
+		
+
+			<p>Depo Yönetim Sistemi ana paneli. Buradan tüm depo
+				işlemlerinizi kolayca yönetebilirsiniz.</p>
+			<div class="home-content">
+<br></br>
+<br></br>
+<br></br>
+				<h2>Son Hareketler</h2>
+
+				<p:dataTable value="#{userBean.recentTransactions}"
+					var="transaction">
+
+					<p:column headerText="Kullanıcı">
+
+						<h:outputText value="#{transaction.userId}" />
+
+					</p:column>
+
+					<p:column headerText="İşlem">
+
+						<h:outputText value="#{transaction.action}" />
+
+					</p:column>
+
+					<p:column headerText="Zaman">
+
+						<h:outputText value="#{transaction.actionTime}" />
+
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+		</div>
+	</div>
 
 </h:body>
 

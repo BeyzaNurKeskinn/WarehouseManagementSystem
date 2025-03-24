@@ -8,6 +8,13 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,20 +24,25 @@ public class UserBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
-
+	private String workingWarehouse;
 	private String password;
-	private String confirmPassword;
+
 	private String loggedInUser;
-	private User selectedUser = new User(0L, "", "");
+	private User selectedUser = new User(0L,"", "", "");
 	private List<User> users = new ArrayList<>();
 	private Long nextId = 1L;
 
 	private UserDAO userDAO = new UserDAO(); // DAO sınıfını ekledik
-
+	private ProductDAO productDAO = new ProductDAO(); // ProductDAO ekledik
 	public UserBean() {
 		users = userDAO.getAllUsers(); // Başlangıçta tüm kullanıcıları çekiyoruz
 	}
-
+	
+	 // Depo isimlerini almak için yeni bir metot
+    public List<String> getWarehouseNames() {
+        return productDAO.getAllWarehouseNames();
+    }
+	
 	public User getSelectedUser() {
 		return selectedUser;
 	}
@@ -49,6 +61,14 @@ public class UserBean implements Serializable {
 		this.name = name;
 	}
 
+	public String getWorkingWarehouse() {
+		return workingWarehouse;
+	}
+
+	public void setWorkingWarehouse(String workingWarehouse) {
+		this.workingWarehouse = workingWarehouse;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -64,10 +84,16 @@ public class UserBean implements Serializable {
 	public List<User> getUsers() {
 		return users;
 	}
-
+	public String formatLocalDateTime(LocalDateTime localDateTime) {
+	    if (localDateTime == null) {
+	        return "";
+	    }
+	    return localDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+	}
 	public String register() throws IOException {
 		if (name != null && !name.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
-			if (!userDAO.addUser(new User(nextId++, name, password))) {
+			
+			if (!userDAO.addUser(new User(nextId++, name,"Admin Tarafından Atanmayı Bekliyor..", password))) {
 				FacesContext.getCurrentInstance().addMessage(null,
 						new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Kullanıcı adı zaten mevcut!"));
 				return null;
@@ -118,6 +144,7 @@ public class UserBean implements Serializable {
 	public String updateUser() {
 		if (selectedUser != null) {
 			userDAO.updateUser(selectedUser); // Veritabanında güncelliyoruz
+			
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Başarılı !", "Artık Sisteme Yeni Bilgilerinizle Giriş Yapabilirsiniz!"));
 			return null;
@@ -132,6 +159,7 @@ public class UserBean implements Serializable {
 			// users.remove(selectedUser);
 
 			userDAO.removeUser(selectedUser);
+			
 			users = userDAO.getAllUsers();
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Kullanıcı silindi!"));
@@ -140,16 +168,39 @@ public class UserBean implements Serializable {
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Hata", "Silinecek kullanıcı seçilmedi!"));
 		}
 	}
+	private List<Transaction> recentTransactions;
 
+    public List<Transaction> getRecentTransactions() {
+        recentTransactions = new ArrayList<>();
+        String sql = "SELECT TOP 10 * FROM transactions ORDER BY action_time DESC";
+
+        try (Connection conn = DatabaseHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Transaction transaction = new Transaction();
+                transaction.setUserId(rs.getInt("user_id"));
+                transaction.setAction(rs.getString("action"));
+                transaction.setActionTime(rs.getTimestamp("action_time").toLocalDateTime());
+                recentTransactions.add(transaction);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recentTransactions;
+    }
 	public static class User implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private Long id;
 		private String name;
+		private String workingWarehouse;
 		private String password;
 
-		public User(Long id, String name, String password) {
+		public User(Long id, String name,String workingWarehouse,String password) {
 			this.id = id;
 			this.name = name;
+			this.workingWarehouse=workingWarehouse;
 			this.password = password;
 		}
 
@@ -169,6 +220,14 @@ public class UserBean implements Serializable {
 			this.name = name;
 		}
 
+		public String getWorkingWarehouse() {
+			return workingWarehouse;
+		}
+
+		public void setWorkingWarehouse(String workingWarehouse) {
+			this.workingWarehouse = workingWarehouse;
+		}
+
 		public String getPassword() {
 			return password;
 		}
@@ -177,4 +236,36 @@ public class UserBean implements Serializable {
 			this.password = password;
 		}
 	}
+
+    public static class Transaction implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private int userId;
+        private String action;
+        private LocalDateTime actionTime;
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public void setUserId(int userId) {
+            this.userId = userId;
+        }
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        public LocalDateTime getActionTime() {
+            return actionTime;
+        }
+
+        public void setActionTime(LocalDateTime actionTime) {
+            this.actionTime = actionTime;
+        }
+    }
 }
+

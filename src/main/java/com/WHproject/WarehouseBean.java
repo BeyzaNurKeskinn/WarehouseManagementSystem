@@ -1,6 +1,7 @@
 package com.WHproject;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.inject.Named;
 public class WarehouseBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String productName;
+	private String warehouseInfo;
 	private int quantity;
 	private Product selectedProduct = new Product(); // // Parametresiz constructor kullanılıyor
 	private List<Product> products = new ArrayList<>();
@@ -34,7 +36,13 @@ public class WarehouseBean implements Serializable {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+	public String getWarehouseInfo() {
+		return warehouseInfo;
+	}
 
+	public void setWarehouseInfo(String warehouseInfo) {
+		this.warehouseInfo = warehouseInfo;
+	}
 	public Product getSelectedProduct() {
 		return selectedProduct;
 	}
@@ -54,16 +62,18 @@ public class WarehouseBean implements Serializable {
 		if (product != null) {
 			this.selectedProduct = product;
 			this.productName = product.getName();
+			this.warehouseInfo=product.getWarehouseInfo();
 			this.quantity = product.getQuantity();
 		}
 	}
 
 	public void addProduct() {
 		if (productName != null && !productName.trim().isEmpty() && quantity > 0) {
-			Product newProduct = new Product(0, productName, quantity);
+			Product newProduct = new Product(0, productName,warehouseInfo, quantity);
 			productDAO.addProduct(newProduct); // Veritabanına ekliyoruz
 			products.add(newProduct); // Listeye ekliyoruz (sayfa güncellenir)
 			productName = "";
+			warehouseInfo="";
 			quantity = 0;
 			selectedProduct = new Product();
 			FacesContext.getCurrentInstance().addMessage(null,
@@ -82,6 +92,7 @@ public class WarehouseBean implements Serializable {
 		if (selectedProduct != null && selectedProduct.getName() != null && !selectedProduct.getName().trim().isEmpty()
 				&& selectedProduct.getQuantity() > 0) {
 			productDAO.updateProduct(selectedProduct); // Veritabanında güncelliyoruz
+			
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Başarılı", "Ürün güncellendi!"));
 			selectedProduct = new Product();
@@ -95,17 +106,20 @@ public class WarehouseBean implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private int id;
 		private String name;
+		private String warehouseInfo;
 		private int quantity;
 
 		public Product() {
 			this.id = 0; // Boş nesne için id = 0
 			this.name = "";
+			this.warehouseInfo="";
 			this.quantity = 0;
 		}
 
-		public Product(int id, String name, int quantity) {
+		public Product(int id, String name, String warehouseInfo, int quantity) {
 			this.id = id;
 			this.name = name;
+			this.warehouseInfo=warehouseInfo;
 			this.quantity = quantity;
 		}
 
@@ -124,7 +138,15 @@ public class WarehouseBean implements Serializable {
 		public void setName(String name) {
 			this.name = name;
 		}
+		
+		public String getWarehouseInfo() {
+			return warehouseInfo;
+		}
 
+		public void setWarehouseInfo(String warehouseInfo) {
+			this.warehouseInfo = warehouseInfo;
+		}
+		
 		public int getQuantity() {
 			return quantity;
 		}

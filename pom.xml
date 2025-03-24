@@ -44,11 +44,11 @@
 			<artifactId>primefaces</artifactId>
 			<version>12.0.0</version>
 		</dependency>
-			<dependency>
-    <groupId>com.microsoft.sqlserver</groupId>
-    <artifactId>mssql-jdbc</artifactId>
-    <version>12.2.0.jre11</version>
-</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>12.2.0.jre11</version>
+		</dependency>
 
 		<!-- Servlet API -->
 		<dependency>
@@ -76,7 +76,7 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 </project>

@@ -5,23 +5,109 @@
       xmlns:p="http://primefaces.org/ui">
 <h:head>
     <title>Register</title>
+    <style type="text/css">
+        body {
+            background: linear-gradient(135deg, #e0eafc, #68a4f2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .register-container {
+            width: 380px;
+            padding: 30px;
+        }
+
+        .ui-panel {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .ui-panel-titlebar {
+            background-color: #1976d2;
+            color: white;
+            border-radius: 8px 8px 0 0;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .ui-panel-content {
+            padding: 30px;
+        }
+
+        .ui-inputfield {
+            width: calc(100% - 32px);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .ui-inputfield:focus {
+            border-color: #1976d2;
+            outline: none;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .register-button:hover {
+            background-color: #1565c0;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </h:head>
 <h:body>
-    <h:form>
-         <p:panel header="Register">
-        <h:outputLabel for="name" value="Username: " />
-        <p:inputText id="name" value="#{userBean.name}" required="true" placeholder="Enter your username" />
-        <br/><br/>
+    <div class="register-container">
+        <h:form>
+            <p:panel header="Register">
+                <h:messages globalOnly="true" showDetail="true" showSummary="true" style="color:red;" />
 
-        <h:outputLabel for="password" value="Password: " />
-        <p:password id="password" value="#{userBean.password}" required="true" toggleMask="true" placeholder="Enter your password"/>
-        <br/><br/>
+                <h:outputLabel for="name" value="Username: " />
+                <p:inputText id="name" value="#{userBean.name}" required="true" placeholder="Enter your username" styleClass="ui-inputfield" />
 
-        <p:commandButton value="Register" action="#{userBean.register}" icon="pi pi-user-plus" styleClass="register-button" />
-        <br/><br/>
+                <h:outputLabel for="password" value="Password: " />
+                <p:password id="password" value="#{userBean.password}" required="true" toggleMask="true" placeholder="Enter your password" styleClass="ui-inputfield" />
 
-        <h:outputLink value="login.xhtml">Back to Login</h:outputLink>
-         </p:panel>
-    </h:form>
+                <p:commandButton value="Register" action="#{userBean.register}" icon="pi pi-user-plus" styleClass="register-button" />
+
+                <div class="login-link">
+                    <h:outputLink value="login.xhtml">Back to Login</h:outputLink>
+                </div>
+            </p:panel>
+        </h:form>
+    </div>
 </h:body>
 </html>

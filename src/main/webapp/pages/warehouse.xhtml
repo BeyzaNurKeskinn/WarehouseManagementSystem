@@ -44,15 +44,20 @@
 
 			<h:form id="addProductForm">
 				<p:panel header="Yeni Ürün Ekle">
-					<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
 						<h:outputLabel for="productName" value="Ürün Adı: " />
 						<p:inputText id="productName" value="#{warehouseBean.productName}"
 							required="true" />
+						<br></br>
+						<h:outputLabel for="warehouseInfo" value="Depo Adı: " />
+						<p:inputText id="warehouseInfo" value="#{warehouseBean.warehouseInfo}"
+							required="true" />
+						<br></br>
 
 						<h:outputLabel for="quantity" value="Adet: " />
 						<p:inputText id="quantity" value="#{warehouseBean.quantity}"
 							required="true" />
-
+						<br></br>
 						<p:commandButton value="Ekle" action="#{warehouseBean.addProduct}"
 							update=":productsForm:productsTable :messages" />
 					</h:panelGrid>
@@ -70,6 +75,10 @@
 						<h:outputText value="#{product.name}" />
 					</p:column>
 
+					<p:column headerText="Depo Adı">
+						<h:outputText value="#{product.warehouseInfo}" />
+					</p:column>
+
 					<p:column headerText="Adet">
 						<h:outputText value="#{product.quantity}" />
 					</p:column>
@@ -77,12 +86,15 @@
 					<p:column headerText="İşlemler">
 						<p:commandButton value="Sil"
 							action="#{warehouseBean.removeProduct(product)}"
-							update=":productsForm:productsTable :messages" />
+							update=":productsForm:productsTable :messages"
+							 style="margin-right: 7px;" />
+							
 						<p:commandButton value="Güncelle"
 							actionListener="#{warehouseBean.setSelectedProduct(product)}"
 							process="@this" update=":updateProductForm"
 							oncomplete="PF('updateProductDialog').show()" />
 					</p:column>
+					
 				</p:dataTable>
 			</h:form>
 
@@ -90,15 +102,19 @@
 				widgetVar="updateProductDialog" modal="true" resizable="false"
 				draggable="false" height="300" width="400">
 				<h:form id="updateProductForm">
-					<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
 						<h:outputLabel for="updateProductName" value="Ürün Adı: " />
 						<p:inputText id="updateProductName"
 							value="#{warehouseBean.selectedProduct.name}" required="true" />
-
+						<br></br>
+						<h:outputLabel for="updateWarehouseInfo" value="Depo Adı: " />
+						<p:inputText id="updateWarehouseInfo"
+							value="#{warehouseBean.selectedProduct.warehouseInfo}" required="true" />
+						<br></br>
 						<h:outputLabel for="updateQuantity" value="Adet: " />
 						<p:inputText id="updateQuantity"
 							value="#{warehouseBean.selectedProduct.quantity}" required="true" />
-
+						<br></br>
 						<p:commandButton value="Güncelle"
 							action="#{warehouseBean.updateProduct}"
 							update=":productsForm:productsTable :messages :updateProductForm"
